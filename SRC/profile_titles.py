@@ -84,6 +84,19 @@ def check_required_fields(
         print("\nRows that should be quarantined:")
         print(invalid_rows)
 
+def separate_valid_and_quarantined_rows(
+        dataframe: pd.DataFrame,
+        required_columns: list[str],
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Seperate valid rows from rows missing required values"""
+
+    quarantine_mask = dataframe[required_columns].isna().any(axis=1)
+
+    quarantined_rows = dataframe[quarantine_mask]
+    valid_rows = dataframe[~quarantine_mask]
+    return valid_rows, quarantined_rows
+
+
 def validate_everything(
         name: str,
         dataframe: pd.DataFrame,
@@ -118,6 +131,18 @@ def main() -> None:
         manga,
         ["Manga series"],
     )
+
+    valid_watched_anime, quarantined_watched_anime = (
+        separate_valid_and_quarantined_rows(
+            watched_anime,
+            ["Anime Name"],
+        )
+    )
+
+    print("\nSeparation results: Most Watched Anime")
+    print("--------------------------------------")
+    print(f"Valid rows: {len(valid_watched_anime)}")
+    print(f"Quarantined rows: {len(quarantined_watched_anime)}")
 
 if __name__ == "__main__":
     main()   
