@@ -54,28 +54,24 @@ def investigate_missing_values(
         print("\nRows with missing values:")
         print(rows_with_missing)      
 
+def validate_everything(
+        name: str,
+        dataframe: pd.DataFrame,
+)-> None:
+    """Run all current data-quality checks for one dataset"""
+
+    print(f"\nValidation report: {name}")
+    print("=" * (19 + len(name)))
+
+    print_profile(name, dataframe)
+    investigate_missing_values(name, dataframe)
+
 def main() -> None:
     top_anime, watched_anime, manga = load_datasets()
 
-    print_profile("Top 1000 Anime", top_anime)
-    print_profile("Most Watched Anime", watched_anime)
-    print_profile("Best-Selling Manga", manga)
-
-
-    investigate_missing_values(
-        "Top 1000 Anime",
-        top_anime,
-    )
-
-    investigate_missing_values(
-        "Most Watched Anime",
-        watched_anime,
-    )
-
-    investigate_missing_values(
-        "Best-Selling Manga",
-        manga,
-    )
+    validate_everything("Top 1000 Anime", top_anime)
+    validate_everything("Most Watched Anime", watched_anime)
+    validate_everything("Best-selling Manga", manga)
 
 if __name__ == "__main__":
     main()   
