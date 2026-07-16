@@ -54,9 +54,40 @@ def investigate_missing_values(
         print("\nRows with missing values:")
         print(rows_with_missing)      
 
+def check_required_fields(
+        name: str,
+        dataframe: pd.DataFrame,
+        required_columns: list[str],
+) -> None:
+    """Check whether required columns exist and contain missing values."""
+
+    print(f"\nRequired-field check: {name}")
+    print("-" * (22 + len(name)))
+
+    missing_columns = [
+        column 
+        for column in required_columns
+        if column not in dataframe.columns
+    ]
+
+    if missing_columns:
+        print(f"Missing required columns: {missing_columns}")
+        return
+
+    invalid_rows = dataframe[dataframe[required_columns].isna().any(axis=1)]
+
+    print(f"Rows missing required values: {len(invalid_rows)}")
+
+    if invalid_rows.empty:
+        print("All required fields are populated")
+    else:
+        print("\nRows that should be quarantined:")
+        print(invalid_rows)
+
 def validate_everything(
         name: str,
         dataframe: pd.DataFrame,
+        required_columns: list[str],
 )-> None:
     """Run all current data-quality checks for one dataset"""
 
@@ -65,13 +96,28 @@ def validate_everything(
 
     print_profile(name, dataframe)
     investigate_missing_values(name, dataframe)
+    check_required_fields(name, dataframe, required_columns)
 
 def main() -> None:
     top_anime, watched_anime, manga = load_datasets()
 
-    validate_everything("Top 1000 Anime", top_anime)
-    validate_everything("Most Watched Anime", watched_anime)
-    validate_everything("Best-selling Manga", manga)
+    validate_everything(
+        "Top 1000 Anime",
+        top_anime,
+        ["anime_id", "anime_name"],
+    )
+
+    validate_everything(
+        "Most Watched Anime",
+        watched_anime,
+        ["Anime Name"],
+    )
+
+    validate_everything(
+        "Best-Selling Manga",
+        manga,
+        ["Manga series"],
+    )
 
 if __name__ == "__main__":
     main()   
