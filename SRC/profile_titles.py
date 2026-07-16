@@ -34,6 +34,26 @@ def print_profile(name:str, dataframe:pd.DataFrame) -> None:
     print("\nMissing values:")
     print(dataframe.isna().sum())
 
+def investigate_missing_values(
+        name: str,
+        dataframe: pd.DataFrame
+)-> None:
+    """Investigate missing-value patterns in dataset"""
+
+    rows_with_missing = dataframe[dataframe.isna().any(axis=1)]
+    completely_blank_rows = dataframe[dataframe.isna().all(axis=1)]
+
+    print(f"\nMissing-value investigation: {name}")
+    print("-" * (29 + len(name)))
+    print(f"Rows containing at least one missing value: {len(rows_with_missing)}")
+    print(f"completely blank rows: {len(completely_blank_rows)}")
+
+    if rows_with_missing.empty:
+        print("No missing values found.")
+    else: 
+        print("\nRows with missing values:")
+        print(rows_with_missing)      
+
 def main() -> None:
     top_anime, watched_anime, manga = load_datasets()
 
@@ -41,6 +61,21 @@ def main() -> None:
     print_profile("Most Watched Anime", watched_anime)
     print_profile("Best-Selling Manga", manga)
 
-if __name__ =="__main__":
-    main()
 
+    investigate_missing_values(
+        "Top 1000 Anime",
+        top_anime,
+    )
+
+    investigate_missing_values(
+        "Most Watched Anime",
+        watched_anime,
+    )
+
+    investigate_missing_values(
+        "Best-Selling Manga",
+        manga,
+    )
+
+if __name__ == "__main__":
+    main()   
